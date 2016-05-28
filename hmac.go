@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha1"
 	"unicode/utf8"
+	"encoding/base64"
 )
 
 func HMAC256(key, data []byte) []byte {
@@ -33,10 +34,10 @@ func HMAC1(key, data []byte) []byte {
 	return h.Sum(nil)
 }
 
-func HMAC1Sign(verb, contentMD5, contentType, canonicalizedAmzHeaders, canonicalizedResource, key, date string) []byte {
+func HMAC1Sign(key, data string) string {
 	if utf8.ValidString(key) {
-		k := HMAC1([]byte(key), []byte(verb+"\n"+contentMD5+"\n"+contentType+"\n"+date+"\n"+canonicalizedAmzHeaders+"\n"+canonicalizedResource))
-		return k
+		k := HMAC1([]byte(key), []byte(data))
+		return base64.StdEncoding.EncodeToString(k)
 	} else {
 		panic("Invalid key")
 	}
